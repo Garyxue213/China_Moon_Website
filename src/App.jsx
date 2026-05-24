@@ -18,6 +18,10 @@ const restaurant = {
   address: "3960 Mary Eliza Trace NW Suite 700, Marietta, GA 30064",
   phone: "(678) 275-2350",
   phoneHref: "tel:+16782752350",
+  phoneNumbers: [
+    { label: "(678) 275-2350", href: "tel:+16782752350" },
+    { label: "(678) 275-2351", href: "tel:+16782752351" }
+  ],
   mapsHref:
     "https://www.google.com/maps/search/?api=1&query=3960%20Mary%20Eliza%20Trace%20NW%20Suite%20700%2C%20Marietta%2C%20GA%2030064",
   mapEmbedSrc:
@@ -735,7 +739,9 @@ function Hero() {
             referrerPolicy="no-referrer-when-downgrade"
           />
           <div className="flex items-center justify-between gap-3 px-2 py-3">
-            <p className="text-sm font-normal leading-5 text-black">{restaurant.address}</p>
+            <a className="text-sm font-normal leading-5 text-black underline underline-offset-4" href={restaurant.mapsHref}>
+              {restaurant.address}
+            </a>
             <a
               href={restaurant.mapsHref}
               className="shrink-0 text-sm font-normal text-black underline underline-offset-4"
@@ -753,8 +759,8 @@ function QuickInfo() {
   const status = useBusinessStatus();
   const facts = [
     { icon: <Utensils size={20} />, label: "Cuisine", value: restaurant.cuisine },
-    { icon: <MapPin size={20} />, label: "Address", value: restaurant.address },
-    { icon: <Phone size={20} />, label: "Phone", value: restaurant.phone, href: restaurant.phoneHref },
+    { icon: <MapPin size={20} />, label: "Address", value: restaurant.address, href: restaurant.mapsHref },
+    { icon: <Phone size={20} />, label: "Phone", phones: restaurant.phoneNumbers },
     { icon: <Clock size={20} />, label: "Today", value: status.today }
   ];
 
@@ -769,7 +775,15 @@ function QuickInfo() {
             <span className="mt-1 text-black">{fact.icon}</span>
             <div>
               <p className="text-xs font-normal text-black">{fact.label}</p>
-              {fact.href ? (
+              {fact.phones ? (
+                <div className="mt-1 space-y-1">
+                  {fact.phones.map((phone) => (
+                    <a key={phone.href} className="block text-sm font-normal leading-5 underline underline-offset-4" href={phone.href}>
+                      {phone.label}
+                    </a>
+                  ))}
+                </div>
+              ) : fact.href ? (
                 <a className="mt-1 block text-sm font-normal leading-5 underline underline-offset-4" href={fact.href}>
                   {fact.value}
                 </a>
@@ -1021,14 +1035,20 @@ function Location() {
           <div className="mt-6 space-y-4 text-black">
             <p className="flex gap-3 font-normal">
               <MapPin className="mt-1 shrink-0 text-black" size={20} />
-              <span>{restaurant.address}</span>
-            </p>
-            <p className="flex gap-3 font-normal">
-              <Phone className="mt-1 shrink-0 text-black" size={20} />
-              <a className="underline decoration-black decoration-2 underline-offset-4" href={restaurant.phoneHref}>
-                {restaurant.phone}
+              <a className="underline decoration-black decoration-2 underline-offset-4" href={restaurant.mapsHref}>
+                {restaurant.address}
               </a>
             </p>
+            <div className="flex gap-3 font-normal">
+              <Phone className="mt-1 shrink-0 text-black" size={20} />
+              <div className="space-y-1">
+                {restaurant.phoneNumbers.map((phone) => (
+                  <a key={phone.href} className="block underline decoration-black decoration-2 underline-offset-4" href={phone.href}>
+                    {phone.label}
+                  </a>
+                ))}
+              </div>
+            </div>
             <p className="text-sm leading-7">
               Parking is available in the shopping center lot. Use the directions button for the most current route.
             </p>
@@ -1053,7 +1073,9 @@ function Contact() {
             Call China Moon to ask about prices, ingredients, current wait times, or special holiday hours.
           </p>
           <div className="mt-6 flex flex-col gap-3 sm:flex-row">
-            <ActionButton href={restaurant.phoneHref} label={restaurant.phone} icon={<Phone size={18} />} light />
+            {restaurant.phoneNumbers.map((phone) => (
+              <ActionButton key={phone.href} href={phone.href} label={phone.label} icon={<Phone size={18} />} light />
+            ))}
             <ActionButton href={restaurant.mapsHref} label="Get Directions" icon={<MapPin size={18} />} light />
           </div>
         </div>
@@ -1072,13 +1094,19 @@ function Footer() {
         </div>
         <div>
           <p className="font-medium">Address</p>
-          <p className="mt-2 text-sm leading-6 text-white">{restaurant.address}</p>
+          <a className="mt-2 block text-sm leading-6 text-white underline underline-offset-4" href={restaurant.mapsHref}>
+            {restaurant.address}
+          </a>
         </div>
         <div>
           <p className="font-medium">Phone</p>
-          <a className="mt-2 block text-sm text-white underline underline-offset-4" href={restaurant.phoneHref}>
-            {restaurant.phone}
-          </a>
+          <div className="mt-2 space-y-1">
+            {restaurant.phoneNumbers.map((phone) => (
+              <a key={phone.href} className="block text-sm text-white underline underline-offset-4" href={phone.href}>
+                {phone.label}
+              </a>
+            ))}
+          </div>
         </div>
         <div>
           <p className="font-medium">Hours</p>
